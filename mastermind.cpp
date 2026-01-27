@@ -1,5 +1,5 @@
 // EECE 2560 – Project Mastermind (Part a)
-// Katherine Woodbury
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood
 //
 // This single-file program implements the Code class and a Part (a)
 // main() that creates a random secret code, prints it, and prints the

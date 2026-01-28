@@ -1,11 +1,12 @@
 // EECE 2560 – Project Mastermind (Part a)
-// Katherine Woodbury, Nathan Tan, Yamin Mahmood
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
 //
-// This single-file program implements the Code class and a Part (a)
+// This program implements the Code class and a Part (a)
 // main() that creates a random secret code, prints it, and prints the
 // results of checkCorrect and checkIncorrect for three required sample
 // guess codes.
 //
+
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -36,7 +37,7 @@ public:
 
    int checkIncorrect(const Code &guess) const;
    // Returns the number of digits that match in value but appear in a
-   // different position, counting each digit at most once.
+   // different position, counting each digit only once.
 
    void print() const;
    // Prints the digits of the code separated by spaces.
@@ -85,28 +86,28 @@ bool Code::setDigits(const vector<int> &d)
 
 int Code::checkCorrect(const Code &guess) const
 {
-   int count = 0;                                 // Number of exact matches
+   int exactMatches = 0;                          // Number of exact matches
 
    for (int i = 0; i < n; i++)                    // Compare each position
    {
       if (digits[i] == guess.digits[i])           // Same digit, same position
       {
-         count++;
+         exactMatches++;
       }
    }
 
-   return count;
+   return exactMatches;
 }
 
 int Code::checkIncorrect(const Code &guess) const
 {
    vector<bool> usedCode(n, false);               // Tracks used secret digits
    vector<bool> usedGuess(n, false);              // Tracks used guess digits
-   int count = 0;                                 // Number of misplaced matches
+   int misMatch = 0;                              // Number of misplaced matches
 
    for (int i = 0; i < n; i++)                    // First mark exact matches
    {
-      if (digits[i] == guess.digits[i])
+      if (digits[i] == guess.digits[i])           // Should have already been checked
       {
          usedCode[i] = true;
          usedGuess[i] = true;
@@ -115,42 +116,43 @@ int Code::checkIncorrect(const Code &guess) const
 
    for (int i = 0; i < n; i++)                    // Check remaining guess digits
    {
-      if (usedGuess[i])
+      if (usedGuess[i])                          
       {
-         continue;
+         continue;                                // restarts the loop if used
       }
 
       for (int j = 0; j < n; j++)                 // Search unused secret digits
       {
-         if ((!usedCode[j]) &&
-             (guess.digits[i] == digits[j]))
+         if ((!usedCode[j]) && (guess.digits[i] == digits[j]))
          {
-            count++;
+            misMatch++;
             usedCode[j] = true;
             break;                                // Prevent double counting
          }
       }
    }
 
-   return count;
+   return misMatch;
 }
 
 void Code::print() const
 {
-   for (int x : digits)
+   for (int digit : digits)
    {
-      cout << x << " ";
+      cout << digit << " ";
    }
 
    cout << endl;
 }
 
+
+// main function for testinf codemaker and guess checking functionality
 int main()
 {
    srand((unsigned) time(NULL));                  // Seed random generator
 
-   int n = 5;                                     // Code length (Part a)
-   int m = 7;                                     // Digit range (allows digit 6)
+   int n = 5;                                     // Code length 
+   int m = 7;                                     // Digit range
 
    Code secret(n, m);                             // Create secret code
    secret.initRandom();                           // Initialize randomly
@@ -169,9 +171,9 @@ int main()
       guess.setDigits(g);                         // Set guess digits
 
       cout << "Guess: ";
-      for (int x : g)
-      {
-         cout << x << " ";
+      for (int x : g)                             // Print each guess followed 
+      {                                           // by a space
+         cout << x << " ";                                 
       }
 
       cout << "-> Correct: " << secret.checkCorrect(guess)

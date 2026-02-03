@@ -1,185 +1,227 @@
-// EECE 2560 – Project Mastermind (Part a)
-// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
-//
-// This program implements the Code class and a Part (a)
-// main() that creates a random secret code, prints it, and prints the
-// results of checkCorrect and checkIncorrect for three required sample
-// guess codes.
-//
+#include "mastermind.h"
 
 #include <iostream>
 #include <vector>
+#include <limits>
 #include <cstdlib>
 #include <ctime>
 
 using namespace std;
 
-class Code
+/**
+ * Default constructor.
+ * Initializes the game with standard Mastermind parameters:
+ *  - n = 5 digits
+ *  - m = 10 possible values per digit (0–9)
+ */
+Mastermind::Mastermind() 
+    : secret(5, 10), n(5), m(10) 
 {
-private:
-   vector<int> digits;            // Stores the digits that make up this code
-   int n;                         // Code length (number of digits)
-   int m;                         // Digit range size; valid digits are [0, m - 1]
-
-public:
-   Code(int length, int range);
-   // Constructs a Code object of the given length and digit range.
-
-   void initRandom();
-   // Randomly initializes the code digits in the range [0, m - 1].
-
-   bool setDigits(const vector<int> &d);
-   // Sets the code digits to the values in d after validating length
-   // and range; used to construct guess codes in Part (a).
-
-   int checkCorrect(const Code &guess) const;
-   // Returns the number of digits that match in both value and position.
-
-   int checkIncorrect(const Code &guess) const;
-   // Returns the number of digits that match in value but appear in a
-   // different position, counting each digit only once.
-
-   void print() const;
-   // Prints the digits of the code separated by spaces.
-};
-
-Code::Code(int length, int range) : digits(), n(length), m(range)
-{
-   if ((n <= 0) || (m <= 0))                      // Validate constructor params
-   {
-      cerr << "Error: n and m must be positive." << endl;
-      n = 0;
-      m = 0;
-   }
-
-   digits.resize(n, 0);                           // Allocate n digits, init to 0
 }
 
-void Code::initRandom()
+/**
+ * Parameterized constructor.
+ * Allows the user to specify custom values for:
+ *  - n: length of the code
+ *  - m: range of valid digit values [0, m-1]
+ */
+Mastermind::Mastermind(int n_in, int m_in) 
+    : secret(n_in, m_in), n(n_in), m(m_in) 
 {
-   for (int i = 0; i < n; i++)                    // Fill each position i
-   {
-      digits[i] = rand() % m;                     // Random digit in [0, m - 1]
-   }
 }
 
-bool Code::setDigits(const vector<int> &d)
+/**
+ * Prints the secret code to the console.
+ * This is primarily included to allow TAs to easily verify
+ * correctness during grading.
+ */
+void Mastermind::printSecret() const 
 {
-   if ((int) d.size() != n)                       // Validate length
-   {
-      cerr << "Error: digit vector has wrong length." << endl;
-      return false;
-   }
-
-   for (int x : d)                                // Validate digit range
-   {
-      if ((x < 0) || (x >= m))
-      {
-         cerr << "Error: digit out of range." << endl;
-         return false;
-      }
-   }
-
-   digits = d;                                    // Copy validated digits
-   return true;
+    cout << "Secret code: ";
+    secret.print();
 }
 
-int Code::checkCorrect(const Code &guess) const
+/**
+ * Prompts the user to enter a guess.
+ * The guess must contain exactly n integers, each in the range [0, m-1].
+ * Input is re-requested until a valid guess is entered.
+ * 
+ * @return A valid Code object representing the user's guess
+ */
+Code Mastermind::humanGuess() const
 {
-   int exactMatches = 0;                          // Number of exact matches
+    while (true)
+    {
+        cout << "Enter your guess as " << n
+             << " digit" << (n != 1 ? "s" : "")
+             << " separated by spaces (each 0 to " << (m - 1) << "):\n> ";
 
-   for (int i = 0; i < n; i++)                    // Compare each position
-   {
-      if (digits[i] == guess.digits[i])           // Same digit, same position
-      {
-         exactMatches++;
-      }
-   }
+        vector<int> digits;
+        digits.reserve(n);
 
-   return exactMatches;
+        // Attempt to read n integers from input
+        bool validInput = true;
+        for (int i = 0; i < n; i++)
+        {
+            int value;
+            if (!(cin >> value))
+            {
+                // Non-integer input encountered
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid input. Please enter integers only.\n\n";
+                validInput = false;
+                break;
+            }
+            digits.push_back(value);
+        }
+
+        // Skip remaining validation if input was non-numeric
+        if (!validInput)
+        {
+            continue;
+        }
+
+        // Clear any remaining input on the line
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        // Verify correct number of digits were entered
+        if (static_cast<int>(digits.size()) != n)
+        {
+            cout << "Please enter exactly " << n << " digit" 
+                 << (n != 1 ? "s" : "") << ".\n\n";
+            continue;
+        }
+
+        // Validate that all digits are within valid range
+        bool inRange = true;
+        for (int value : digits)
+        {
+            if (value < 0 || value >= m)
+            {
+                cout << "All digits must be between 0 and " << (m - 1) << ".\n";
+                cout << "Invalid digit: " << value << "\n\n";
+                inRange = false;
+                break;
+            }
+        }
+
+        if (!inRange)
+        {
+            continue;
+        }
+
+        // Create and return the validated guess
+        Code guess(n, m);
+        if (guess.setDigits(digits))
+        {
+            return guess;
+        }
+
+        // Defensive fallback (should not occur with proper validation)
+        cout << "Unable to create valid guess. Please try again.\n\n";
+    }
 }
 
-int Code::checkIncorrect(const Code &guess) const
+/**
+ * Computes the response to a given guess by comparing it
+ * to the secret code.
+ *
+ * The response includes:
+ *  - number of digits correct in both value and position
+ *  - number of digits correct in value but in the wrong position
+ *
+ * @param guess The code to evaluate
+ * @return Response object containing feedback
+ */
+Response Mastermind::getResponse(const Code& guess) const
 {
-   vector<bool> usedCode(n, false);               // Tracks used secret digits
-   vector<bool> usedGuess(n, false);              // Tracks used guess digits
-   int misMatch = 0;                              // Number of misplaced matches
-
-   for (int i = 0; i < n; i++)                    // First mark exact matches
-   {
-      if (digits[i] == guess.digits[i])           // Should have already been checked
-      {
-         usedCode[i] = true;
-         usedGuess[i] = true;
-      }
-   }
-
-   for (int i = 0; i < n; i++)                    // Check remaining guess digits
-   {
-      if (usedGuess[i])                          
-      {
-         continue;                                // restarts the loop if used
-      }
-
-      for (int j = 0; j < n; j++)                 // Search unused secret digits
-      {
-         if ((!usedCode[j]) && (guess.digits[i] == digits[j]))
-         {
-            misMatch++;
-            usedCode[j] = true;
-            break;                                // Prevent double counting
-         }
-      }
-   }
-
-   return misMatch;
+    int correct = secret.checkCorrect(guess);
+    int incorrect = secret.checkIncorrect(guess);
+    return Response(correct, incorrect);
 }
 
-void Code::print() const
+/**
+ * Determines whether the game has been solved.
+ * The code is considered solved when the number of
+ * correct digits equals the code length.
+ *
+ * @param r Response to evaluate
+ * @return true if all digits are correct and in correct positions
+ */
+bool Mastermind::isSolved(const Response& r) const
 {
-   for (int digit : digits)
-   {
-      cout << digit << " ";
-   }
-
-   cout << endl;
+    return r.getCorrect() == n;
 }
 
-
-// main function for testinf codemaker and guess checking functionality
-int main()
+/**
+ * Runs the main Mastermind game loop.
+ *  - Initializes the secret code randomly
+ *  - Prints the secret (for grading/debugging)
+ *  - Prompts the user for guesses up to a fixed number of turns
+ *  - Prints feedback after each guess
+ *  - Terminates early if the code is successfully solved
+ */
+void Mastermind::playGame()
 {
-   srand((unsigned) time(NULL));                  // Seed random generator
+    // Seed the random number generator once per program run
+    static bool seeded = false;
+    if (!seeded)
+    {
+        srand(static_cast<unsigned>(time(nullptr)));
+        seeded = true;
+    }
 
-   int n = 5;                                     // Code length 
-   int m = 7;                                     // Digit range
+    // Generate a random secret code
+    secret.initRandom();
 
-   Code secret(n, m);                             // Create secret code
-   secret.initRandom();                           // Initialize randomly
+    // Display welcome message and game rules
+    cout << "\n========================================\n";
+    cout << "       MASTERMIND GAME\n";
+    cout << "========================================\n";
+    cout << "Code length: " << n << " digits\n";
+    cout << "Digit range: 0 to " << (m - 1) << "\n";
+    cout << "Max turns: 10\n";
+    cout << "========================================\n\n";
 
-   cout << "Secret code: ";
-   secret.print();
+    // Print secret for grading/debugging purposes
+    printSecret();
+    cout << endl;
 
-   vector<vector<int>> guesses;                   // Required sample guesses
-   guesses.push_back({5, 0, 3, 2, 6});
-   guesses.push_back({2, 1, 2, 2, 2});
-   guesses.push_back({1, 3, 3, 4, 5});
+    const int maxTurns = 10;
 
-   for (const vector<int> &g : guesses)
-   {
-      Code guess(n, m);                           // Create guess code object
-      guess.setDigits(g);                         // Set guess digits
+    // Main game loop
+    for (int turn = 1; turn <= maxTurns; turn++)
+    {
+        cout << "\n--- Turn " << turn << " of " << maxTurns << " ---\n";
 
-      cout << "Guess: ";
-      for (int x : g)                             // Print each guess followed 
-      {                                           // by a space
-         cout << x << " ";                                 
-      }
+        // Get validated guess from player
+        Code guess = humanGuess();
+        
+        // Evaluate guess and generate response
+        Response r = getResponse(guess);
 
-      cout << "-> Correct: " << secret.checkCorrect(guess)
-           << ", Incorrect: " << secret.checkIncorrect(guess)
-           << endl;
-   }
+        // Display feedback
+        cout << "\nCodemaker response:\n";
+        cout << r;  // Uses overloaded operator<<
 
-   return 0;
+        // Check for win condition
+        if (isSolved(r))
+        {
+            cout << "\n========================================\n";
+            cout << "   CODEBREAKER WINS!\n";
+            cout << "   Solved in " << turn << " turn" 
+                 << (turn != 1 ? "s" : "") << "!\n";
+            cout << "========================================\n";
+            return;
+        }
+    }
+
+    // If the loop exits without a solution, the codemaker wins
+    cout << "\n========================================\n";
+    cout << "   CODEMAKER WINS!\n";
+    cout << "   You did not solve the code in time.\n";
+    cout << "========================================\n";
+    cout << "The secret was: ";
+    secret.print();
 }

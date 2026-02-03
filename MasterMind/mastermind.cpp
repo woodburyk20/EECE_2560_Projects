@@ -15,10 +15,7 @@ using namespace std;
  *  - n = 5 digits
  *  - m = 10 possible values per digit (0–9)
  */
-Mastermind::Mastermind()
-    : secret(5, 10), n(5), m(10)
-{
-}
+Mastermind::Mastermind() : secret(5, 10), n(5), m(10) { }
 
 /*
  * Parameterized constructor.
@@ -26,17 +23,14 @@ Mastermind::Mastermind()
  *  - n: length of the code
  *  - m: range of valid digit values
  */
-Mastermind::Mastermind(int n_in, int m_in)
-    : secret(n_in, m_in), n(n_in), m(m_in)
-{
-}
+Mastermind::Mastermind(int n_in, int m_in) : secret(n_in, m_in), n(n_in), m(m_in) { }
 
 /*
  * Prints the secret code.
  * This is primarily included to allow TAs to easily verify
  * correctness during grading.
  */
-void Mastermind::printSecret() const
+void Mastermind::printSecret() const 
 {
     cout << "Secret code: ";
     secret.print();

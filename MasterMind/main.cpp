@@ -44,7 +44,7 @@ static int readPositiveInt(const string& prompt)
 int main()
 {
     cout << "=============================\n";
-    cout << "     Mastermind (Part B)     \n";
+    cout << "          Mastermind         \n";
     cout << "=============================\n\n";
 
     cout << "Use custom code length and range? (y/n): ";

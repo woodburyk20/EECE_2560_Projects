@@ -1,45 +1,69 @@
-// EECE 2560 – Project Mastermind (Part a)
+// EECE 2560 – Project Mastermind (Part B)
 // Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+//
+// This file contains the main driver for the Mastermind game.
+// It prompts the user to choose between default or custom game
+// parameters and then runs the game loop.
 
-#include "code.h"
+#include "mastermind.h"
 
 #include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
+#include <limits>
+
+using namespace std;
+
+/*
+ * Helper function to safely read a positive integer from the user.
+ * Continues prompting until a valid integer greater than zero is entered.
+ */
+static int readPositiveInt(const string& prompt)
+{
+    while (true)
+    {
+        cout << prompt;
+        int x;
+
+        if (!(cin >> x))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter an integer.\n";
+            continue;
+        }
+
+        if (x <= 0)
+        {
+            cout << "Please enter a positive integer.\n";
+            continue;
+        }
+
+        return x;
+    }
+}
 
 int main()
 {
-    std::srand((unsigned)std::time(NULL));
+    cout << "=============================\n";
+    cout << "     Mastermind (Part B)     \n";
+    cout << "=============================\n\n";
 
-    int n = 5;  // Code length
-    int m = 7;  // Digit range
+    cout << "Use custom code length and range? (y/n): ";
+    char choice;
+    cin >> choice;
 
-    Code secret(n, m);
-    secret.initRandom();
-
-    std::cout << "Secret code: ";
-    secret.print();
-
-    std::vector<std::vector<int>> guesses;
-    guesses.push_back({5, 0, 3, 2, 6});
-    guesses.push_back({2, 1, 2, 2, 2});
-    guesses.push_back({1, 3, 3, 4, 5});
-
-    for (const std::vector<int>& g : guesses)
+    if (choice == 'y' || choice == 'Y')
     {
-        Code guess(n, m);
-        guess.setDigits(g);
+        int n = readPositiveInt("Enter n (code length): ");
+        int m = readPositiveInt("Enter m (digit range size): ");
 
-        std::cout << "Guess: ";
-        for (int x : g)
-        {
-            std::cout << x << " ";
-        }
-
-        std::cout << "-> Correct: " << secret.checkCorrect(guess)
-                  << ", Incorrect: " << secret.checkIncorrect(guess)
-                  << std::endl;
+        Mastermind game(n, m);
+        game.playGame();
+    }
+    else
+    {
+        // Default game: n = 5, m = 10
+        Mastermind game;
+        game.playGame();
     }
 
     return 0;

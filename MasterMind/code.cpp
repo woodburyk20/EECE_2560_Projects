@@ -1,3 +1,8 @@
+// EECE 2560 – Project Mastermind (Part B)
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+//
+// Implementation file for the Code class
+
 #include "code.h"      // Declares the Code class and its public interface
 
 #include <iostream>    // Provides cout, cerr, endl for output

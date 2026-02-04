@@ -1,3 +1,9 @@
+// EECE 2560 – Project Mastermind (Part B)
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+//
+// Header file for Code class.
+// Stores a code and provides functions to compare guesses.
+
 #ifndef CODE_H
 #define CODE_H
 

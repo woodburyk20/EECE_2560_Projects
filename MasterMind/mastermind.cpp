@@ -1,3 +1,8 @@
+// EECE 2560 – Project Mastermind (Part B)
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+//
+// Implementation file for Mastermind class.
+
 #include "mastermind.h"
 
 #include <iostream>  

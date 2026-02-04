@@ -1,3 +1,9 @@
+// EECE 2560 – Project Mastermind (Part B)
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+//
+// Header file for Mastermind class.
+// Controls the game logic for mastermind.
+
 #ifndef MASTERMIND_H
 #define MASTERMIND_H
 

@@ -1,3 +1,9 @@
+// EECE 2560 – Project Mastermind (Part B)
+// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+//
+// Header file for Response class.
+// Stores the response to a guess.
+
 #ifndef RESPONSE_H
 #define RESPONSE_H
 

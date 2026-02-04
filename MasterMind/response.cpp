@@ -1,4 +1,6 @@
-#include "response.h"  
+#include "response.h"
+
+using namespace std;
 
 /*
  * Constructor for a Response object.
@@ -68,7 +70,7 @@ bool operator==(const Response& r1, const Response& r2)
  *   os : the output stream to write to (e.g., cout or an ofstream)
  *   r  : the Response object being printed
  */
-std::ostream& operator<<(std::ostream& os, const Response& r)
+ ostream& operator<<( ostream& os, const Response& r)
 {
     os << "  Right digit in the right location: " << r.getCorrect() << "\n"
        << "  Right digit in the wrong location: " << r.getIncorrect();

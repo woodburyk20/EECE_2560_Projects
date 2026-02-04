@@ -29,7 +29,7 @@ void Mastermind::printSecret() const
 {
     cout << "Secret code: ";
     secret.print();
-}
+} // end printSecret
 
 /*
  * Prompts the user to enter an entire guess in one line.
@@ -71,7 +71,7 @@ Code Mastermind::humanGuess() const
                 d.clear();
 
                 break; // Exit for loop -- stop reading integers
-            }
+            } // end if
 
             
             d.push_back(x); // valid integer stored as part of the guess
@@ -80,8 +80,8 @@ Code Mastermind::humanGuess() const
             if (cin.peek() == '\n' && i < n - 1)
             {
                 break;
-            }
-        }
+            } // end if
+        } 
 
         
         // discard anything left on the line, prevents from affecting the next guess attempt.
@@ -92,7 +92,7 @@ Code Mastermind::humanGuess() const
         {
             cout << "Please enter exactly " << n << " digits.\n";
             continue; 
-        }
+        } // end if
 
         // Validate that each digit is within the allowed range [0, m-1].
         // This ensures the guess matches the game's digit rules.
@@ -112,7 +112,7 @@ Code Mastermind::humanGuess() const
             cout << "Digits must be between 0 and "
                  << (m - 1) << ".\n";
             continue; 
-        }
+        } // end if
 
         Code guess(n, m); // build a Code object to represent this guess.
 
@@ -120,13 +120,13 @@ Code Mastermind::humanGuess() const
         if (guess.setDigits(d))
         {
             return guess;
-        }
+        } // end if
 
       
         // Backup if setDigits doesnt work
         cout << "Guess invalid. Try again.\n";
     }
-}
+} // end humanGuess
 
 /*
  * Computes the codemaker's response to a guess by comparing it to the secret code.
@@ -144,7 +144,7 @@ Response Mastermind::getResponse(const Code& guess) const
 
     // Pack the two values into a Response object and return it
     return Response(c, ic);
-}
+} // end getResponse
 
 
 // Determines if the codebreaker has solved the secret code.
@@ -152,7 +152,7 @@ Response Mastermind::getResponse(const Code& guess) const
 bool Mastermind::isSolved(const Response& r) const
 {
     return r.getCorrect() == n;
-}
+} // end isSolved
 
 /*
  * Runs the main game loop.
@@ -173,8 +173,8 @@ void Mastermind::playGame()
     // Generate a random secret code
     secret.initRandom();
 
-    // Print the secret for testing/grading (uncomment if wanted)
-    // printSecret();
+    // Print the secret for testing
+    printSecret();
 
     // Main turn loop: user gets up to maxTurns attempts
     for (int turn = 1; turn <= maxTurns; turn++)
@@ -197,11 +197,11 @@ void Mastermind::playGame()
             cout << "Codebreaker wins! Solved in "
                  << turn << " turns.\n";
             return; // exit playGame() early on success
-        }
+        } // end if
     }
 
     // If we reach here, the user did not solve within maxTurns
     cout << "\nCodemaker wins! You did not solve the code in time.\n";
     cout << "The secret was: ";
     secret.print();
-}
+} // end playGame

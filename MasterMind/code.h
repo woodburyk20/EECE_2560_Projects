@@ -3,10 +3,12 @@
 
 #include <vector>
 
+using namespace std;
+
 class Code
 {
 private:
-    std::vector<int> digits;  // Stores the digits that make up this code
+     vector<int> digits;  // Stores the digits that make up this code
     int n;                    // Code length (number of digits)
     int m;                    // Digit range size; valid digits are [0, m - 1]
 
@@ -17,7 +19,7 @@ public:
     void initRandom();
     // Randomly initializes the code digits in the range [0, m - 1].
 
-    bool setDigits(const std::vector<int>& d);
+    bool setDigits(const  vector<int>& d);
     // Sets the code digits to the values in d after validating length
     // and range; used to construct guess codes in Part (a).
 

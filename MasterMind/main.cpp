@@ -1,11 +1,6 @@
 // EECE 2560 – Project Mastermind (Part B)
 // Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
 //
-// main.cpp
-// --------
-// This file contains the main() function, which is the program's
-// starting point.
-//
 // Responsibilities of this file:
 //   1) Display a simple welcome banner / user prompt.
 //   2) Ask whether the user wants default game settings or custom settings.
@@ -14,7 +9,6 @@
 //        - the default constructor, or
 //        - the parameterized constructor with user-provided n and m.
 //   5) Start the actual game loop by calling playGame().
-//
 
 #include "mastermind.h"   // Gives access to the Mastermind class interface
 
@@ -24,8 +18,6 @@
 using namespace std;
 
 /*
- * readPositiveInt(prompt)
- * -----------------------
  * Safely reads a positive integer from the user.
  * 
  * Repeatedly prompts the user until valid input is entered
@@ -70,7 +62,7 @@ static int readPositiveInt(const string& prompt)
         // Valid input: integer and positive
         return x;
     }
-}
+} // end while
 
 int main()
 {
@@ -109,7 +101,7 @@ int main()
 
         // Start the game loop with default settings.
         game.playGame();
-    }
+    } // end if
 
     return 0;
 }

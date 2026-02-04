@@ -29,7 +29,6 @@ public:
 
     /*
     * Prompts the user to enter an entire guess in one line.
-    *
     * Input format expected:
     *   - Exactly n integers separated by spaces
     *   - Each integer must be a valid digit in the range [0, m-1]
@@ -52,7 +51,7 @@ public:
     // The game is solved when the number of exact matches equals the code 
     // length.
     bool isSolved(const Response& r) const;
-    
+
     /*
     * Runs the main game loop.
     *   1) Generates a random secret code.

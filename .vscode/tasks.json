@@ -2,17 +2,17 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build mastermind",
+      "label": "build flipcards",
       "type": "shell",
       "command": "g++",
       "args": [
         "-g",
         "*.cpp",
         "-o",
-        "mastermind.exe"
+        "flipcards.exe"
       ],
       "options": {
-        "cwd": "MasterMind"
+        "cwd": "FlipCards"
       },
       "problemMatcher": ["$gcc"],
       "group": { "kind": "build", "isDefault": true }

@@ -10,15 +10,17 @@
 // Constructor
 // Creates a standard 52-card deck in order and stores it in a linked list 
 // starting at front.
-Deck::Deck() : front(NULL), deckSize(0) {
+Deck::Deck(bool makeStandardDeck) : front(NULL), deckSize(0) {
 
-    // Array of valid suit strings used to create each Card
-    std::string suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
+    if(makeStandardDeck) {
+         // Array of valid suit strings used to create each Card
+        std::string suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 
-    // Generate 4 * 13 = 52 cards and append each to the linked list
-    for (int s = 0; s < 4; s++) {
-        for (int v = 1; v <= 13; v++) {
-            pushBack(Card(v, suits[s]));   // Add card to end of deck
+        // Generate 4 * 13 = 52 cards and append each to the linked list
+        for (int s = 0; s < 4; s++) {
+            for (int v = 1; v <= 13; v++) {
+                pushBack(Card(v, suits[s]));   // Add card to end of deck
+            }
         }
     }
 }
@@ -103,6 +105,42 @@ void Deck::shuffle() {
         nodeI->nodeValue = nodeJ->nodeValue;
         nodeJ->nodeValue = temp;
     }
+}
+
+node<Card>* Deck::deal() {
+    if (front == NULL) {
+        return NULL;
+    } //endif
+
+    node<Card>* topCard = front;    // Save old front node
+    front = front->next;            // Move front forward
+
+    topCard->next = NULL;           // Disconnect returned node
+    
+    deckSize--;
+
+    return topCard;
+}
+
+void Deck::replace(node<Card>* cardNode) {
+    if(cardNode == NULL) {
+        return;
+    } //endif
+
+    cardNode->next = NULL; // make sure it ends the list
+
+    if (front == NULL) {
+        front = cardNode;
+    } else {
+        node<Card>* current = front;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+
+        current->next = cardNode;
+    }
+
+    deckSize++;
 }
 
 // Overloaded << operator

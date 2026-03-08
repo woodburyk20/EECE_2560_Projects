@@ -18,6 +18,18 @@ Card::Card(int value, std::string suit) {
     setSuit(suit);     // Validate and set card suit
 }
 
+Card::Card(const Card& newCard) {
+    value = newCard.getValue();
+    suit = newCard.getSuit();
+}
+
+Card& Card::operator=(const Card& newCard) {
+    
+    value = newCard.value;
+    suit = newCard.suit;
+    return *this;
+}
+
 // Sets the numeric value of the card.
 // Valid values are 1–13
 // Throws out_of_range if value is invalid.

@@ -30,6 +30,12 @@ public:
     // Default: Ace of Clubs.
     Card(int value = 1, string suit = "Clubs");
 
+    // Copy constructor
+    Card(const Card& newCard);
+
+    // Overloaded = function
+    Card& operator=(const Card& newCard);
+
     // Returns the numeric value of the card.
     int getValue() const;
 
@@ -41,7 +47,7 @@ public:
 
     // Sets the suit of the card.
     void setSuit(const string& suit);
-
+    
     // Overloaded << operator
     // Allows printing a Card object using:
     // cout << card;

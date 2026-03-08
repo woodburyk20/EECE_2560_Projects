@@ -36,7 +36,7 @@ public:
     // Constructor
     // Builds a standard 52-card deck (4 suits × 13 values)
     // and stores it in the linked list.
-    Deck();
+    Deck(bool makeStandardDeck);
 
     // Destructor
     // Frees all dynamically allocated memory.
@@ -47,6 +47,10 @@ public:
 
     // Returns the number of cards currently in the deck.
     int size() const;
+
+
+    node<Card>* deal();
+    void replace(node<Card>* cardNode);
 
     // Overloaded << operator
     // Prints all cards in the deck in order.

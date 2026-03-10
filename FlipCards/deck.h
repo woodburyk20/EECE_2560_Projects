@@ -1,61 +1,59 @@
 // EECE 2560 – Flip Card
 // Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
 //
-// Header file for the Deck class.
-// This class represents a full deck of playing cards stored
-// as a singly linked list using node<Card>.
-// The deck supports construction of a standard 52-card deck,
-// shuffling, size checking, and printing.
+// Header file for the Deck class. Contains declarations for Deck,
+// clear, pushBack, shuffle, size, deal, replace, and operator<<.
+//
 
 #ifndef DECK_H
 #define DECK_H
 
-#include "card.h"     // Card class definition
-#include "d_node.h"   // node<T> linked list template
+#include "card.h"    // Card class definition
+#include "d_node.h"  // node<T> linked list template
 
-class Deck {
+class Deck
+{
+   public:
 
-private:
-    // Pointer to the first node in the linked list.
-    // Each node stores a Card and a pointer to the next node.
-    node<Card>* front;
+      Deck(bool makeStandardDeck);
+      // Constructs a Deck object. If makeStandardDeck is true, builds
+      // a standard 52-card deck (4 suits x 13 values) stored as a
+      // linked list. If false, initializes an empty deck.
 
-    // Tracks the current number of cards in the deck.
-    int deckSize;
+      ~Deck();
+      // Destructor. Frees all dynamically allocated node memory.
 
-    // Deletes all nodes in the linked list
-    // and resets the deck to an empty state.
-    void clear();
+      void shuffle();
+      // Randomizes the order of cards currently in the deck.
 
-    // Appends a Card to the end of the linked list.
-    // Used internally when building the deck.
-    void pushBack(const Card& c);
-    
-public: 
+      int size() const;
+      // Returns the number of cards currently in the deck.
 
-    // Constructor
-    // Builds a standard 52-card deck (4 suits × 13 values)
-    // and stores it in the linked list.
-    Deck(bool makeStandardDeck);
+      node<Card>* deal();
+      // Removes and returns the front node of the deck. The caller
+      // is responsible for deleting the returned node when done.
+      // Assumption: deck is non-empty before calling.
 
-    // Destructor
-    // Frees all dynamically allocated memory.
-    ~Deck();
+      void replace(node<Card>* cardNode);
+      // Appends an existing node to the back of the deck.
+      // Assumption: cardNode is a valid, non-null pointer.
 
-    // Randomizes the order of cards in the deck.
-    void shuffle();
+      friend ostream& operator<<(ostream& os, const Deck& d);
+      // Prints all cards in the deck in order to the output stream os.
 
-    // Returns the number of cards currently in the deck.
-    int size() const;
+   private:
 
+      node<Card>* front;  // pointer to the first node in the list
+      int deckSize;       // current number of cards in the deck
 
-    node<Card>* deal();
-    void replace(node<Card>* cardNode);
+      void clear();
+      // Deletes all nodes in the linked list and resets the deck
+      // to an empty state.
 
-    // Overloaded << operator
-    // Prints all cards in the deck in order.
-    friend ostream& operator<<(ostream& os, const Deck &d);
+      void pushBack(const Card& c);
+      // Appends a new node containing c to the end of the linked
+      // list. Used internally when building the deck.
 
-};
+}; // end class Deck
 
 #endif // DECK_H

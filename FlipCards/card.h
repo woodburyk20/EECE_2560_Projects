@@ -1,51 +1,55 @@
 // EECE 2560 – Flip Card
 // Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
 //
-// Header file for the Card class.
-// This class represents a single playing card.
-// A card has a numeric value and a suit (Club, Diamond, Heart, Spade).
-// The class provides constructors, setters, getters, and an overloaded
-// << operator for printing.
+// Header file for the Card class. Contains declarations for Card,
+// getValue, setValue, getSuit, setSuit, and operator<<.
+//
 
 #ifndef CARD_H
 #define CARD_H
 
-#include <iostream>   // For ostream
-#include <string>     // For string
+#include <iostream>
+#include <string>
 
 using namespace std;
 
-class Card {
-private:
-    // Stores the card’s numeric value.
-    int value;
+class Card
+{
+   public:
 
-    // Stores the suit of the card.
-    // Expected values: "Club", "Diamond", "Heart", "Spade"
-    string suit;
+      Card(int value = 1, string suit = "Clubs");
+      // Constructs a Card with the given numeric value and suit string.
+      // Default: Ace of Clubs. Expected suits: "Clubs", "Diamonds",
+      // "Hearts", "Spades". Expected values: 1–13.
 
-public:
-    // Constructor
-    // Initializes a card with a given value and suit.
-    // Default: Ace of Clubs.
-    Card(int value = 1, string suit = "Clubs");
+      Card(const Card& newCard);
+      // Copy constructor. Initializes this Card as a copy of newCard.
 
-    // Returns the numeric value of the card.
-    int getValue() const;
+      Card& operator=(const Card& newCard);
+      // Assignment operator. Copies value and suit from newCard into
+      // this Card. Returns a reference to this Card.
 
-    // Sets the numeric value of the card.
-    void setValue(int newValue);
+      int getValue() const;
+      // Returns the numeric value of this card (1–13).
 
-    // Returns the suit of the card.
-    string getSuit() const;
+      void setValue(int newValue);
+      // Sets the numeric value of this card to newValue.
 
-    // Sets the suit of the card.
-    void setSuit(const string& suit);
+      string getSuit() const;
+      // Returns the suit of this card as a string.
 
-    // Overloaded << operator
-    // Allows printing a Card object using:
-    // cout << card;
-    friend ostream& operator<<(ostream& os, const Card& c);
-};
+      void setSuit(const string& suit);
+      // Sets the suit of this card to the given string.
+
+      friend ostream& operator<<(ostream& os, const Card& c);
+      // Prints a human-readable representation of this card to os.
+      // Returns os to support stream chaining.
+
+   private:
+
+      int value;     // numeric value of the card (1–13)
+      string suit;   // suit of the card: Clubs, Diamonds, Hearts, Spades
+
+}; // end class Card
 
 #endif // CARD_H

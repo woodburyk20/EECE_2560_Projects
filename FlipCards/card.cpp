@@ -1,79 +1,113 @@
 // EECE 2560 – Flip Card
 // Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
 //
-// Implementation file for the Card class.
-// This file defines all member functions for creating,
-// validating, accessing, and printing a playing card.
+// Implementation file for the Card class. Contains definitions for
+// Card, getValue, setValue, getSuit, setSuit, and operator<<.
+//
 
 #include "Card.h"
-#include <stdexcept>   // For out_of_range and invalid_argument
+#include <stdexcept>
 
 using namespace std;
 
-// Constructor
-// Initializes a Card object with a given value and suit.
-// Uses setter functions to ensure validation logic is applied.
-Card::Card(int value, std::string suit) {
-    setValue(value);   // Validate and set card value
-    setSuit(suit);     // Validate and set card suit
-}
+Card::Card(int value, std::string suit)
+// Constructs a Card with the given value and suit. Uses setter
+// functions so that validation logic is applied on construction.
+{
+   setValue(value);
+   setSuit(suit);
 
-// Sets the numeric value of the card.
-// Valid values are 1–13
-// Throws out_of_range if value is invalid.
-void Card::setValue(int v) {
-    if (v < 1 || v > 13) {
-        throw out_of_range("Card value must be between 1 and 13.");
-    } // endif
+} // end Card constructor
 
-    value = v;   // Store validated value
-}
+Card::Card(const Card& newCard)
+// Copy constructor. Initializes this Card as a copy of newCard.
+{
+   value = newCard.getValue();
+   suit = newCard.getSuit();
 
-// Sets the suit of the card.
-// Valid suits: "Clubs", "Diamonds", "Hearts", "Spades".
-// Throws invalid_argument if suit is invalid.
-void Card::setSuit(const std::string& s) {
-    if (s != "Clubs" && s != "Diamonds" && s != "Hearts" && s != "Spades") {
-        throw invalid_argument("Invalid suit.");
-    } // endif
+} // end Card copy constructor
 
-    suit = s;   // Store validated suit
-}
+Card& Card::operator=(const Card& newCard)
+// Assignment operator. Copies value and suit from newCard into this
+// Card. Returns a reference to this Card.
+{
+   value = newCard.value;
+   suit = newCard.suit;
+   return *this;
 
-// Returns the numeric value of the card.
-int Card::getValue() const {
-    return value;
-}
+} // end operator=
 
-// Returns the suit of the card.
-string Card::getSuit() const {
-    return suit;
-}
+int Card::getValue() const
+// Returns the numeric value of this card (1–13).
+{
+   return value;
 
-// Overloaded << operator
-// Prints the card in readable format:
-ostream& operator<<(ostream& os, const Card& c) {
-    string valueStr;
+} // end getValue
 
-    // Convert numeric value into face name if needed
-    if (c.value == 1) {
-        valueStr = "Ace";
-    } // endif
-    else if (c.value == 11) {
-        valueStr = "Jack";
-    } // endif
-    else if (c.value == 12) {
-        valueStr = "Queen";
-    } // endif
-    else if (c.value == 13) {
-        valueStr = "King";
-    } // endif
-    else {
-        valueStr = to_string(c.value);   // Number cards (2–10)
-    }
+string Card::getSuit() const
+// Returns the suit of this card as a string.
+{
+   return suit;
 
-    // Output formatted card description
-    os << valueStr << " of " << c.suit;
+} // end getSuit
 
-    return os;   // Return stream for chaining
-}
+void Card::setValue(int v)
+// Sets the numeric value of this card to v.
+// Throws out_of_range if v is not between 1 and 13.
+{
+   if (v < 1 || v > 13)
+   {
+      throw out_of_range("Card value must be between 1 and 13.");
+   } // end if
+
+   value = v;
+
+} // end setValue
+
+void Card::setSuit(const std::string& s)
+// Sets the suit of this card to s.
+// Throws invalid_argument if s is not one of: "Clubs", "Diamonds",
+// "Hearts", "Spades".
+{
+   if (s != "Clubs" && s != "Diamonds" && s != "Hearts" && s != "Spades")
+   {
+      throw invalid_argument("Invalid suit.");
+   } // end if
+
+   suit = s;
+
+} // end setSuit
+
+ostream& operator<<(ostream& os, const Card& c)
+// Prints the card in human-readable format (e.g. "Ace of Spades",
+// "7 of Diamonds"). Returns os to support stream chaining.
+{
+   string valueStr;
+
+   // convert numeric value to face name where applicable
+   if (c.value == 1)
+   {
+      valueStr = "Ace";
+   }
+   else if (c.value == 11)
+   {
+      valueStr = "Jack";
+   }
+   else if (c.value == 12)
+   {
+      valueStr = "Queen";
+   }
+   else if (c.value == 13)
+   {
+      valueStr = "King";
+   }
+   else
+   {
+      valueStr = to_string(c.value);  // number cards print as digits
+   } // end if
+
+   os << valueStr << " of " << c.suit;
+
+   return os;
+
+} // end operator

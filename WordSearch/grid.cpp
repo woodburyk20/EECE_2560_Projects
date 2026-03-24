@@ -1,65 +1,104 @@
-// EECE 2560 – Word Search
-// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+// EECE 2560 – Word Search      
+// Katherine Woodbury, Nathan Tan
 //
 // grid.cpp
-// Implements the grid class functions.
+// Implements the grid class functions. Handles reading grid data from a
+// file and providing direct and toroidally-wrapped character access.
 
 #include "grid.h"
 
-grid::grid() {
-    rows = 0;
-    cols = 0;
-} //endif
+grid::grid()
+// Default constructor. Sets rows and cols to zero before any file is read.
+{
+   rows = 0;
+   cols = 0;
 
-void grid::readGrid(const string& filename) {
-    ifstream inFile(filename);
+} // end constructor
 
-    if (!inFile.is_open()) {
-        cout << "Error opening grid file." << endl;
-        return;
-    } //endif
+void grid::readGrid(const string& filename)
+// Opens filename, reads the grid dimensions, and fills the letters array.
+// Prints an error message and returns early if the file cannot be opened.
+// Assumes: the file begins with two integers (rows cols) followed by
+// rows*cols space-separated single characters.
+{
+   ifstream inFile(filename);
 
-    inFile >> rows >> cols;
+   if (!inFile.is_open())
+   {
+      cout << "Error opening grid file." << endl;
+      return;
+   } // end if
 
-    letters.resize(rows, vector<char>(cols));
+   // Read the grid dimensions from the first line
+   inFile >> rows >> cols;
 
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            inFile >> letters[i][j];
-        } //endif
-    } //endif
+   // Allocate the 2-D letter array
+   letters.resize(rows, vector<char>(cols));
 
-    inFile.close();
-} //endif
+   // Fill each cell with the corresponding character from the file
+   for (int i = 0; i < rows; i++)
+   {
+      for (int j = 0; j < cols; j++)
+      {
+         inFile >> letters[i][j];
+      } // end for
+   } // end for
 
-int grid::getRows() const {
-    return rows;
-} //endif
+   inFile.close();
 
-int grid::getCols() const {
-    return cols;
-} //endif
+} // end readGrid
 
-char grid::getChar(int row, int col) const {
-    return letters[row][col];
-} //endif
+int grid::getRows() const
+// Returns the number of rows in the grid.
+{
+   return rows;
 
-char grid::getWrappedChar(int row, int col) const {
-    int wrappedRow = (row % rows + rows) % rows;
-    int wrappedCol = (col % cols + cols) % cols;
+} // end getRows
 
-    return letters[wrappedRow][wrappedCol];
-} //endif
+int grid::getCols() const
+// Returns the number of columns in the grid.
+{
+   return cols;
 
-ostream& operator<<(ostream& out, const grid& g) {
-    out << g.rows << " " << g.cols << endl;
+} // end getCols
 
-    for (int i = 0; i < g.rows; i++) {
-        for (int j = 0; j < g.cols; j++) {
-            out << g.letters[i][j] << " ";
-        } //endif
-        out << endl;
-    } //endif
+char grid::getChar(int row, int col) const
+// Returns the character at grid position (row, col).
+// Assumes: row is in [0, rows) and col is in [0, cols).
+{
+   return letters[row][col];
 
-    return out;
-} //endif
+} // end getChar
+
+char grid::getWrappedChar(int row, int col) const
+// Returns the character at (row, col) using toroidal (wraparound)
+// indexing, so negative or out-of-range indices wrap to the other side.
+// Assumes: rows > 0 and cols > 0.
+{
+   int wrappedRow = (row % rows + rows) % rows;
+   int wrappedCol = (col % cols + cols) % cols;
+
+   return letters[wrappedRow][wrappedCol];
+
+} // end getWrappedChar
+
+ostream& operator<<(ostream& out, const grid& g)
+// Prints the grid dimensions followed by all characters, one row per line,
+// with a space between each character.
+{
+   out << g.rows << " " << g.cols << endl;
+
+   for (int i = 0; i < g.rows; i++)
+   {
+      for (int j = 0; j < g.cols; j++)
+      {
+         out << g.letters[i][j] << " ";
+      } // end for
+
+      out << endl;
+
+   } // end for
+
+   return out;
+
+} // end operator<<

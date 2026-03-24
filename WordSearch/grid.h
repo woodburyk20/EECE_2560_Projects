@@ -20,6 +20,7 @@ public:
     int getRows() const;
     int getCols() const;
     char getChar(int row, int col) const;
+    char getWrappedChar(int row, int col) const;
 
     friend ostream& operator<<(ostream& out, const grid& g);
 };

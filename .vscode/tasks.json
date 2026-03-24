@@ -2,17 +2,17 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build flipcards",
+      "label": "build wordsearch",
       "type": "shell",
       "command": "g++",
       "args": [
         "-g",
         "*.cpp",
         "-o",
-        "flipcards.exe"
+        "wordsearch.exe"
       ],
       "options": {
-        "cwd": "FlipCards"
+        "cwd": "WordSearch"
       },
       "problemMatcher": ["$gcc"],
       "group": { "kind": "build", "isDefault": true }

@@ -18,7 +18,7 @@ void search() {
     grid g;
 
     string gridFileName;
-    string dictionaryFileName = "dictionary.txt";
+    string dictionaryFileName = "Dictionary";
     string outputFileName = "output.txt";
 
     // Ask user for the grid file name

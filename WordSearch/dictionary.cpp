@@ -6,6 +6,7 @@
 // including file I/O, selection sort, quicksort, and binary search.
 
 #include "dictionary.h"
+#include "heap.h"
 
 dictionary::dictionary()
 // Default constructor. No initialization needed beyond the empty vector.
@@ -123,9 +124,13 @@ void dictionary::quickSort()
 
 void dictionary::heapSort()
 // Sorts words in ascending lexicographic order using heapsort.
-// Implemented in Part b using the heap class.
+// Creates a local heap<string>, loads the unsorted word list into it,
+// runs heapSort(), then copies the sorted result back into words.
 {
-   // To be implemented in Part b
+   heap<string> h;
+   h.initializeMaxHeap(words);
+   words = h.heapSort();
+
 } // end heapSort
 
 // ---------------------------------------------------------------------------

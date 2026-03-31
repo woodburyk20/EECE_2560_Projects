@@ -7,7 +7,7 @@
 // and heapsort.  Template method bodies are defined here because the
 // compiler needs the full definition at each instantiation site.
 //
-// Bonus (part d): templated on T so it works for any comparable type.
+// Bonus: templated on T so it works for any comparable type.
 
 #ifndef HEAP_H
 #define HEAP_H
@@ -26,7 +26,7 @@ class heap
 {
 public:
 
-   // --- Navigation helpers (part a) ----------------------------------------
+   // --- Navigation helpers  ----------------------------------------
 
    int parent(int i) const;
    // Returns the index of node i's parent in the heap array.
@@ -41,7 +41,7 @@ public:
    T getItem(int n) const;
    // Returns the element stored at index n in the heap array.
 
-   // --- Max-heap construction (part b) -------------------------------------
+   // --- Max-heap construction  -------------------------------------
 
    void initializeMaxHeap(vector<T> v);
    // Copies v into the internal array and builds a max-heap via
@@ -56,7 +56,7 @@ public:
    // Converts data[0..heapSize-1] into a max-heap by calling maxHeapify
    // on every non-leaf node in bottom-up order.
 
-   // --- Sort (part c) -------------------------------------------------------
+   // --- Sorting -------------------------------------------------------
 
    vector<T> heapSort();
    // Sorts the internal array in ascending order and returns the sorted

@@ -4,6 +4,15 @@
 // main.cpp
 // Entry point. Prompts the user to select a sorting algorithm, then
 // calls search(int) to run the word search.
+//
+// Fastest sorting algorithm: Quicksort is the fastest of the three in
+// practice. All three algorithms are correct, but selection sort runs in
+// O(n^2) time and becomes noticeably slow on large dictionaries. Both
+// quicksort and heapsort run in O(n log n), but quicksort typically wins
+// due to better cache locality -- its partitioning step accesses memory
+// sequentially, whereas heapsort's sift-down jumps around the array.
+// Quicksort also has lower constant-factor overhead than heapsort in most
+// real-world cases, making it the fastest choice here.
 
 #include <iostream>
 

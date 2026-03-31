@@ -37,7 +37,7 @@ void findMatches(const dictionary& dict, const grid& g,
    // Row and column deltas for each of the 8 search directions:
    // NW, N, NE, W, E, SW, S, SE
    int rowDir[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-   int colDir[8] = {-1,  0,  1, -1, 1, -1, 0, 1};
+   int colDir[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
    // Maximum word length equals the number of rows (or cols — square grid)
    int maxLength = rows;

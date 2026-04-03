@@ -3,8 +3,8 @@
 //
 // dictionary.h
 // Header file for the dictionary class. Declares a container for a list
-// of words that supports reading from a file, selection sort, binary
-// search, and output streaming.
+// of words that supports reading from a file, selection sort, quicksort,
+// heapsort, binary search, and output streaming.
 
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
@@ -31,6 +31,14 @@ public:
    // Sorts the word list in ascending lexicographic order using
    // selection sort.
 
+   void quickSort();
+   // Sorts the word list in ascending lexicographic order using
+   // quicksort.
+
+   void heapSort();
+   // Sorts the word list in ascending lexicographic order using
+   // heapsort. (Implemented in Part b.)
+
    int binarySearch(const string& word) const;
    // Searches the sorted word list for word using binary search.
    // Returns the index of word if found, or -1 if not found.
@@ -44,6 +52,13 @@ public:
 
 private:
    vector<string> words;    // stores all words loaded from the file
+
+   void quickSortHelper(int lo, int hi);
+   // Recursive helper that sorts words[lo..hi] in place.
+
+   int partition(int lo, int hi);
+   // Partitions words[lo..hi] around words[hi] as pivot and returns
+   // the final index of the pivot.
 
 }; // end class dictionary
 

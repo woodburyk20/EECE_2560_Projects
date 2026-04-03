@@ -1,5 +1,5 @@
 // EECE 2560 – Flip Card
-// Katherine Woodbury, Nathan Tan, Yamin Mahmood, Bryce Pippin
+// Katherine Woodbury, Nathan Tan
 //
 // Implementation file for the Deck class. Contains definitions for
 // Deck, ~Deck, clear, pushBack, size, shuffle, deal, replace,

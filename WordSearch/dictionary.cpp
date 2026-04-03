@@ -3,9 +3,10 @@
 //
 // dictionary.cpp
 // Implements the dictionary class. Provides word list management
-// including file I/O, selection sort, and binary search.
+// including file I/O, selection sort, quicksort, and binary search.
 
 #include "dictionary.h"
+#include "heap.h"
 
 dictionary::dictionary()
 // Default constructor. No initialization needed beyond the empty vector.
@@ -62,6 +63,77 @@ void dictionary::selectionSort()
    } // end for
 
 } // end selectionSort
+
+// ---------------------------------------------------------------------------
+// Quicksort
+// ---------------------------------------------------------------------------
+
+int dictionary::partition(int lo, int hi)
+// Partitions words[lo..hi] using words[hi] as the pivot (Lomuto scheme).
+// Scans left to right; any element <= pivot is swapped into the left
+// partition. The pivot is placed in its final sorted position at the end.
+// Returns the index where the pivot was placed.
+{
+   string pivot = words[hi];
+   int i = lo - 1;  // rightmost index of the left (<=pivot) partition
+
+   for (int j = lo; j < hi; j++)
+   {
+      if (words[j] <= pivot)
+      {
+         i++;
+         swap(words[i], words[j]);
+      } // end if
+   } // end for
+
+   // Place pivot immediately after the left partition
+   swap(words[i + 1], words[hi]);
+
+   return i + 1;
+
+} // end partition
+
+void dictionary::quickSortHelper(int lo, int hi)
+// Recursively sorts words[lo..hi] using partition().
+// Base case: a subarray of size 0 or 1 is already sorted.
+{
+   if (lo < hi)
+   {
+      int pivotIdx = partition(lo, hi);
+
+      quickSortHelper(lo, pivotIdx - 1);   // sort left of pivot
+      quickSortHelper(pivotIdx + 1, hi);   // sort right of pivot
+
+   } // end if
+
+} // end quickSortHelper
+
+void dictionary::quickSort()
+// Sorts words in ascending lexicographic order using quicksort.
+// Calls quickSortHelper() to perform the recursive sort over the
+// full index range [0, size-1].
+{
+   if (words.empty())
+      return;
+
+   quickSortHelper(0, (int)words.size() - 1);
+
+} // end quickSort
+
+// ---------------------------------------------------------------------------
+
+void dictionary::heapSort()
+// Sorts words in ascending lexicographic order using heapsort.
+// Creates a local heap<string>, loads the unsorted word list into it,
+// runs heapSort(), then copies the sorted result back into words.
+{
+   heap<string> h;
+   h.initializeMaxHeap(words);
+   words = h.heapSort();
+
+} // end heapSort
+
+// ---------------------------------------------------------------------------
 
 int dictionary::binarySearch(const string& word) const
 // Searches the sorted word list for word using binary search.

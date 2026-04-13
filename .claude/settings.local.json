@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(g++ -o sudoku board.cpp -std=c++11)"
+    ]
+  }
+}

@@ -1,40 +1,45 @@
-// EECE 2560 – Sudoku
+// Project Sudoku b                         
 // Katherine Woodbury, Nathan Tan
 //
 // main.cpp
 // Entry point. Reads Sudoku boards from input files, solves each one,
-// and reports recursive call counts and the overall average.
+// and reports the recursive call count per board and the overall
+// average.
+//
 
 #include "board.h"
 
-// main
 
 int main()
+// Iterates over all input files, solves every board found in each
+// file, and prints the solution and recursive call count for each.
+// After all boards are processed, prints total and average call count.
 {
    // All three input files to process in sequence.
    string fileNames[] = {"sudoku1.txt", "sudoku2.txt", "sudoku3.txt"};
    int numFiles = 3;
 
    // Accumulators for the final average calculation.
-   int totalCalls = 0;
+   int totalCalls  = 0;
    int totalBoards = 0;
 
-   // Process each file one at a time.
    for (int f = 0; f < numFiles; f++)
    {
       ifstream fin;
       fin.open(fileNames[f].c_str());
+
       if (!fin)
       {
          cerr << "Cannot open " << fileNames[f] << endl;
-         continue; // skip missing files and move to the next
+         continue;
       }
 
       try
       {
          board b(SquareSize);
 
-         // Each file may contain multiple boards; 'Z' marks the end of the file.
+         // Each file may contain multiple boards; 'Z' marks the end.
+
          while (fin && fin.peek() != 'Z')
          {
             b.initialize(fin);
@@ -45,7 +50,9 @@ int main()
             b.print();
 
             // Solve and count recursive calls for this board.
+
             int calls = 0;
+
             if (b.solve(calls))
             {
                cout << "Solution:" << endl;
@@ -60,7 +67,8 @@ int main()
             cout << "Recursive calls: " << calls << endl;
             totalCalls += calls;
             totalBoards++;
-         }
+
+         } // end while
       }
       catch (indexRangeError &ex)
       {
@@ -68,9 +76,11 @@ int main()
       }
 
       fin.close();
-   }
+
+   } // end for
 
    // Print summary statistics across all boards.
+
    if (totalBoards > 0)
       cout << "\nTotal boards solved: " << totalBoards
            << "\nTotal recursive calls: " << totalCalls
@@ -78,4 +88,5 @@ int main()
            << (double)totalCalls / totalBoards << endl;
 
    return 0;
-}
+
+} // end main

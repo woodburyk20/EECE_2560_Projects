@@ -1,37 +1,35 @@
-// EECE 2560 – Sudoku
+// Project Sudoku b                         
 // Katherine Woodbury, Nathan Tan
 //
 // board.cpp
-// Implements the board class. Manages a 9x9 Sudoku grid with
-// conflict tracking across rows, columns, and 3x3 squares.
+// Implements the board class. Manages a 9x9 Sudoku grid with conflict
+// tracking across rows, columns, and 3x3 squares.
+//
 
 #include "board.h"
 
 
-// squareNumber
-// Return the square number of cell i,j (counting left to right, top to bottom).
-// i and j each go from 1 to BoardSize.
-
 int squareNumber(int i, int j)
+// Returns the square number (1-9) of cell (i, j), counting left to
+// right, top to bottom. i and j go from 1 to BoardSize.
 {
    return SquareSize * ((i - 1) / SquareSize) + (j - 1) / SquareSize + 1;
 }
 
 
-// Overloaded output operator for vector<int>
-
 ostream &operator<<(ostream &ostr, vector<int> &v)
+// Prints all elements of v to ostr separated by spaces.
 {
    for (int i = 0; i < (int)v.size(); i++)
       ostr << v[i] << " ";
+
    cout << endl;
    return ostr;
 }
 
 
-// board constructor
-
 board::board(int sqSize)
+// Initializes an empty board with all cells blank and no conflicts.
    : value(BoardSize + 1, BoardSize + 1),
      conflictRow(BoardSize + 1, MaxValue + 1, false),
      conflictCol(BoardSize + 1, MaxValue + 1, false),
@@ -41,10 +39,8 @@ board::board(int sqSize)
 }
 
 
-// clear
-// Reset all cells to Blank and clear all conflict flags.
-
 void board::clear()
+// Resets all cells to Blank and clears all conflict flags.
 {
    for (int i = 1; i <= BoardSize; i++)
       for (int j = 1; j <= BoardSize; j++)
@@ -60,10 +56,9 @@ void board::clear()
 }
 
 
-// initialize
-// Read a Sudoku board from the input file and update conflicts.
-
 void board::initialize(ifstream &fin)
+// Reads a Sudoku board from fin, placing digits and updating conflicts.
+// Assumes fin is open and positioned at the start of a valid board.
 {
    char ch;
 
@@ -80,10 +75,9 @@ void board::initialize(ifstream &fin)
 }
 
 
-// getCell
-// Returns the value stored in a cell. Throws rangeError for bad indices.
-
 ValueType board::getCell(int i, int j)
+// Returns the value stored in cell (i, j).
+// Throws rangeError if indices are out of bounds.
 {
    if (i >= 1 && i <= BoardSize && j >= 1 && j <= BoardSize)
       return value[i][j];
@@ -92,10 +86,9 @@ ValueType board::getCell(int i, int j)
 }
 
 
-// isBlank
-// Returns true if cell i,j is blank, false otherwise.
-
 bool board::isBlank(int i, int j)
+// Returns true if cell (i, j) is blank.
+// Throws rangeError if indices are out of bounds.
 {
    if (i < 1 || i > BoardSize || j < 1 || j > BoardSize)
       throw rangeError("bad value in isBlank");
@@ -104,14 +97,14 @@ bool board::isBlank(int i, int j)
 }
 
 
-// setCell
-// Places digit v into cell (i, j) and marks it as a conflict in the
-// corresponding row, column, and square. Throws if the value is out of range.
-
 void board::setCell(int i, int j, ValueType v)
+// Places digit v in cell (i, j) and marks it as a conflict in the
+// corresponding row, column, and square.
+// Throws rangeError for invalid indices or out-of-range digit.
 {
    if (i < 1 || i > BoardSize || j < 1 || j > BoardSize)
       throw rangeError("bad index in setCell");
+
    if (v < MinValue || v > MaxValue)
       throw rangeError("bad value in setCell");
 
@@ -124,14 +117,14 @@ void board::setCell(int i, int j, ValueType v)
 }
 
 
-// clearCell
-// Removes the digit from cell (i, j) and clears the conflict flags,
-// but only if no other cell in the same row/col/square still holds that digit.
-
 void board::clearCell(int i, int j)
+// Removes the digit from cell (i, j) and clears the conflict flag
+// only if no other cell in the same row, column, or square still
+// holds that digit. Throws rangeError for invalid indices.
 {
    if (i < 1 || i > BoardSize || j < 1 || j > BoardSize)
       throw rangeError("bad index in clearCell");
+
    if (isBlank(i, j))
       return;
 
@@ -140,104 +133,145 @@ void board::clearCell(int i, int j)
 
    value[i][j] = Blank;
 
-   // Re-check row i for digit v
+   // Re-check row i: clear the flag only if v is gone from the row.
+
    bool stillInRow = false;
+
    for (int col = 1; col <= BoardSize; col++)
-      if (value[i][col] == v) { stillInRow = true; break; }
+   {
+      if (value[i][col] == v)
+      {
+         stillInRow = true;
+         break;
+      }
+   }
+
    conflictRow[i][v] = stillInRow;
 
-   // Re-check column j for digit v
+   // Re-check column j: clear the flag only if v is gone from the col.
+
    bool stillInCol = false;
+
    for (int row = 1; row <= BoardSize; row++)
-      if (value[row][j] == v) { stillInCol = true; break; }
+   {
+      if (value[row][j] == v)
+      {
+         stillInCol = true;
+         break;
+      }
+   }
+
    conflictCol[j][v] = stillInCol;
 
-   // Re-check square sq for digit v
+   // Re-check square sq: clear the flag only if v is gone from sq.
+
    bool stillInSq = false;
+
    for (int r = 1; r <= BoardSize && !stillInSq; r++)
+   {
       for (int c = 1; c <= BoardSize && !stillInSq; c++)
+      {
          if (squareNumber(r, c) == sq && value[r][c] == v)
             stillInSq = true;
+      }
+   }
+
    conflictSq[sq][v] = stillInSq;
-}
 
+} // end clearCell
 
-// print
-// Prints the current board with grid lines.
 
 void board::print()
+// Prints the current board to cout with grid lines separating the
+// 3x3 squares.
 {
    for (int i = 1; i <= BoardSize; i++)
    {
       if ((i - 1) % SquareSize == 0)
       {
          cout << " -";
+
          for (int j = 1; j <= BoardSize; j++)
             cout << "---";
+
          cout << "-" << endl;
       }
+
       for (int j = 1; j <= BoardSize; j++)
       {
          if ((j - 1) % SquareSize == 0)
             cout << "|";
+
          if (!isBlank(i, j))
             cout << " " << getCell(i, j) << " ";
          else
             cout << "   ";
       }
+
       cout << "|" << endl;
    }
 
    cout << " -";
+
    for (int j = 1; j <= BoardSize; j++)
       cout << "---";
+
    cout << "-" << endl;
-}
 
+} // end print
 
-// printConflicts
-// Prints which digits are already placed in each row, column, and square.
 
 void board::printConflicts()
+// Prints which digits are already placed in each row, column, and
+// square. Used for debugging.
 {
    cout << "\nConflicts by Row:" << endl;
+
    for (int i = 1; i <= BoardSize; i++)
    {
       cout << "  Row " << i << ": ";
+
       for (int v = 1; v <= MaxValue; v++)
          if (conflictRow[i][v])
             cout << v << " ";
+
       cout << endl;
    }
 
    cout << "\nConflicts by Column:" << endl;
+
    for (int j = 1; j <= BoardSize; j++)
    {
       cout << "  Col " << j << ": ";
+
       for (int v = 1; v <= MaxValue; v++)
          if (conflictCol[j][v])
             cout << v << " ";
+
       cout << endl;
    }
 
    cout << "\nConflicts by Square:" << endl;
+
    for (int s = 1; s <= BoardSize; s++)
    {
       cout << "  Sq  " << s << ": ";
+
       for (int v = 1; v <= MaxValue; v++)
          if (conflictSq[s][v])
             cout << v << " ";
+
       cout << endl;
    }
+
    cout << endl;
-}
 
+} // end printConflicts
 
-// isSolved
-// Returns true if every digit 1-9 appears in every row, column, and square.
-// Prints the result to the screen.
 
 bool board::isSolved()
+// Returns true if every digit 1-9 appears in every row, column, and
+// square, and prints the result to cout.
 {
    for (int i = 1; i <= BoardSize; i++)
       for (int v = 1; v <= MaxValue; v++)
@@ -252,30 +286,17 @@ bool board::isSolved()
 }
 
 
-// findBlank  —  MRV (Minimum Remaining Values) heuristic
-//
-// Instead of always picking the first empty cell in row-major order, we scan
-// every blank cell and count how many digits are still legal for it.  We then
-// return the cell with the FEWEST legal options (the "most constrained" cell).
-//
-// Why:
-//   Choosing a cell that already has only 1 or 2 candidates means wrong guesses
-//   are detected almost immediately, collapsing large branches of the search
-//   tree before they are explored.  Picking an unconstrained cell first lets
-//   bad guesses propagate many levels deep before a contradiction is found.
-//
-// This technique comes from constraint-satisfaction theory and is described in:
-//   Russell, S. & Norvig, P. "Artificial Intelligence: A Modern Approach",
-//   Chapter 6 — Constraint Satisfaction Problems.
-//   See also: https://en.wikipedia.org/wiki/Sudoku_solving_algorithms
-//
-// Returns true if at least one blank cell was found (sets i, j to that cell).
-// Returns false when the board is completely filled (base case for solve).
-
 bool board::findBlank(int &i, int &j)
+// Finds the blank cell with the fewest legal digits remaining
+// (MRV heuristic). Sets i and j to that cell and returns true.
+// Returns false if no blank cell exists (board is complete).
+//
+// MRV (Minimum Remaining Values) is described in:
+//   Russell & Norvig, "Artificial Intelligence: A Modern Approach",
+//   Chapter 6 - Constraint Satisfaction Problems.
+//   See also: https://en.wikipedia.org/wiki/Sudoku_solving_algorithms
 {
-   // Track the best cell found so far.
-   int minCandidates = MaxValue + 1; // higher than any real count
+   int minCandidates = MaxValue + 1;  // sentinel: higher than any count
    bool foundAny = false;
 
    for (int r = 1; r <= BoardSize; r++)
@@ -283,23 +304,26 @@ bool board::findBlank(int &i, int &j)
       for (int c = 1; c <= BoardSize; c++)
       {
          if (!isBlank(r, c))
-            continue; // skip filled cells
+            continue;
 
-         // Count how many digits are still legal for cell (r, c).
+         // Count legal digits remaining for this cell.
+
          int count = 0;
+
          for (int v = MinValue; v <= MaxValue; v++)
             if (isLegal(r, c, v))
                count++;
 
-         // A cell with 0 legal values is an immediate dead end — return it
-         // right away so solve() backtracks without trying any digit.
+         // A cell with 0 candidates is an immediate dead end; return
+         // it so solve() backtracks without trying any digit.
+
          if (count == 0)
          {
-            i = r; j = c;
+            i = r;
+            j = c;
             return true;
          }
 
-         // Otherwise keep the cell with the fewest remaining candidates.
          if (count < minCandidates)
          {
             minCandidates = count;
@@ -307,65 +331,54 @@ bool board::findBlank(int &i, int &j)
             j = c;
             foundAny = true;
          }
-      }
-   }
+
+      } // end for c
+   } // end for r
 
    return foundAny;
-}
 
+} // end findBlank
 
-// isLegal
-// Returns true if digit v can legally be placed at cell (i, j) —
-// i.e., v is not already present in the same row, column, or square.
-// The conflict matrices make this an O(1) lookup.
 
 bool board::isLegal(int i, int j, ValueType v)
+// Returns true if digit v can legally be placed at cell (i, j),
+// i.e., v does not already appear in the same row, column, or square.
+// Uses the conflict matrices for an O(1) lookup.
 {
    int sq = squareNumber(i, j);
    return !conflictRow[i][v] && !conflictCol[j][v] && !conflictSq[sq][v];
 }
 
 
-// solve  —  recursive backtracking with MRV + implicit forward checking
-//
-// Algorithm:
-//   1. Use findBlank (MRV) to pick the most constrained empty cell.
-//      If none exists, the board is solved — return true.
-//   2. Try each digit 1–9 that is legal for that cell.
-//   3. Place the digit, recurse.  If the recursive call succeeds, propagate
-//      the success upward.
-//   4. If no digit works (or the recursion fails), undo the placement and
-//      return false so the caller can try its next candidate (backtrack).
-//
-// Implicit forward checking:
-//   Because findBlank uses MRV, it will immediately return any blank cell
-//   that has 0 legal candidates after a placement.  The for-loop below then
-//   finds no legal digit and returns false without going deeper — equivalent
-//   to forward checking but without a separate pass.
-//
-// Increments recursiveCalls on every entry so the caller can report effort.
-
 bool board::solve(int &recursiveCalls)
+// Solves the board recursively using backtracking. Uses findBlank
+// (MRV) to pick the most constrained cell, tries each legal digit,
+// and recurses. Undoes any placement that leads to a dead end.
+// Returns true when solved, false if no solution exists from this
+// state. Increments recursiveCalls on every entry.
 {
    recursiveCalls++;
 
    int i, j;
-   // Base case: no blank cells left means the puzzle is complete.
+
+   // Base case: no blank cells means the puzzle is complete.
+
    if (!findBlank(i, j))
       return true;
 
-   // Try every digit for the chosen cell (MRV already picked the best cell).
    for (int v = MinValue; v <= MaxValue; v++)
    {
       if (!isLegal(i, j, v))
-         continue; // skip illegal digits immediately
+         continue;
 
-      setCell(i, j, v);             // tentatively place the digit
-      if (solve(recursiveCalls))    // recurse; if it works, we're done
+      setCell(i, j, v);           // tentatively place the digit
+
+      if (solve(recursiveCalls))  // recurse; propagate success upward
          return true;
-      clearCell(i, j);              // undo and try the next candidate
+
+      clearCell(i, j);            // undo and try the next candidate
    }
 
-   // No digit worked, signal the caller to backtrack.
+   // No digit worked; signal the caller to backtrack.
    return false;
 }

@@ -43,6 +43,9 @@ class board
       void setCell(int, int, ValueType);
       void clearCell(int, int);
       bool isSolved();
+      bool findBlank(int &i, int &j);
+      bool isLegal(int i, int j, ValueType v);
+      bool solve(int &recursiveCalls);
 
    private:
       // The following matrices go from 1 to BoardSize in each
@@ -303,38 +306,121 @@ bool board::isSolved()
 }
 
 // ---------------------------------------------------------------------------
+// findBlank
+// Sets i and j to the first blank cell found (row-major order).
+// Returns true if a blank cell exists, false if the board is complete.
+// ---------------------------------------------------------------------------
+bool board::findBlank(int &i, int &j)
+{
+   for (i = 1; i <= BoardSize; i++)
+      for (j = 1; j <= BoardSize; j++)
+         if (isBlank(i, j))
+            return true;
+   return false;
+}
+
+// ---------------------------------------------------------------------------
+// isLegal
+// Returns true if digit v can legally be placed at cell (i, j) —
+// i.e., v is not already present in the same row, column, or square.
+// ---------------------------------------------------------------------------
+bool board::isLegal(int i, int j, ValueType v)
+{
+   int sq = squareNumber(i, j);
+   return !conflictRow[i][v] && !conflictCol[j][v] && !conflictSq[sq][v];
+}
+
+// ---------------------------------------------------------------------------
+// solve
+// Recursively solves the board using backtracking.
+// Increments recursiveCalls on each call. Returns true when solved.
+// ---------------------------------------------------------------------------
+bool board::solve(int &recursiveCalls)
+{
+   recursiveCalls++;
+
+   int i, j;
+   if (!findBlank(i, j))
+      return true;
+
+   for (int v = MinValue; v <= MaxValue; v++)
+   {
+      if (isLegal(i, j, v))
+      {
+         setCell(i, j, v);
+         if (solve(recursiveCalls))
+            return true;
+         clearCell(i, j);
+      }
+   }
+
+   return false;
+}
+
+// ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
 int main()
 {
-   ifstream fin;
+   string fileNames[] = {"sudoku1.txt", "sudoku2.txt", "sudoku3.txt"};
+   int numFiles = 3;
 
-   string fileName = "sudoku1.txt";
+   int totalCalls = 0;
+   int totalBoards = 0;
 
-   fin.open(fileName.c_str());
-   if (!fin)
+   for (int f = 0; f < numFiles; f++)
    {
-      cerr << "Cannot open " << fileName << endl;
-      exit(1);
-   }
-
-   try
-   {
-      board b1(SquareSize);
-
-      while (fin && fin.peek() != 'Z')
+      ifstream fin;
+      fin.open(fileNames[f].c_str());
+      if (!fin)
       {
-         b1.initialize(fin);
-         b1.print();
-         b1.printConflicts();
-         b1.isSolved();
+         cerr << "Cannot open " << fileNames[f] << endl;
+         continue;
       }
+
+      try
+      {
+         board b(SquareSize);
+
+         while (fin && fin.peek() != 'Z')
+         {
+            b.initialize(fin);
+
+            cout << "\n=== Board " << totalBoards + 1
+                 << " (from " << fileNames[f] << ") ===" << endl;
+            cout << "Initial board:" << endl;
+            b.print();
+
+            int calls = 0;
+            if (b.solve(calls))
+            {
+               cout << "Solution:" << endl;
+               b.print();
+               b.isSolved();
+            }
+            else
+            {
+               cout << "No solution found." << endl;
+            }
+
+            cout << "Recursive calls: " << calls << endl;
+            totalCalls += calls;
+            totalBoards++;
+         }
+      }
+      catch (indexRangeError &ex)
+      {
+         cout << ex.what() << endl;
+      }
+
+      fin.close();
    }
-   catch (indexRangeError &ex)
-   {
-      cout << ex.what() << endl;
-      exit(1);
-   }
+
+   if (totalBoards > 0)
+      cout << "\nTotal boards solved: " << totalBoards
+           << "\nTotal recursive calls: " << totalCalls
+           << "\nAverage recursive calls: "
+           << (double)totalCalls / totalBoards << endl;
 
    return 0;
 }

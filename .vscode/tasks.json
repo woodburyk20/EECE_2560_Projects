@@ -2,17 +2,17 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build wordsearch",
+      "label": "build sudoku",
       "type": "shell",
       "command": "g++",
       "args": [
         "-g",
         "*.cpp",
         "-o",
-        "wordsearch.exe"
+        "sudoku.exe"
       ],
       "options": {
-        "cwd": "WordSearch"
+        "cwd": "Sudoku"
       },
       "problemMatcher": ["$gcc"],
       "group": { "kind": "build", "isDefault": true }
